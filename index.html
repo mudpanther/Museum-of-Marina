@@ -94,6 +94,19 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
         
+        // Get the base path from the current URL
+        const getBasePath = () => {
+            const path = window.location.pathname;
+            const segments = path.split('/').filter(Boolean);
+            // If we're in a GitHub Pages project (not user site), first segment is the repo name
+            if (segments.length > 0 && segments[0] !== 'index.html') {
+                return '/' + segments[0] + '/';
+            }
+            return '/';
+        };
+        
+        const BASE_PATH = getBasePath();
+        
         const keyParts = ['c2stYW50LWFwaTA','zLUFzMzBXejVs','WTZFQklZTy1LdFZn','TG1XT0VId2xSVFNv','TGxub1J5MkJMcTg2','SjJuRm1XT3hUaVpU','Y29MZGxSbDc5d0E2','X3czdXJ3R1FkcVZh','a0t6eHpRLXNWSGZsZ0FB'];
         
         function getApiKey() {
@@ -195,7 +208,7 @@
                             <div className="gallery-grid">
                                 {filteredArtworks.map(art => (
                                     <div key={art.id} className="artwork-card" onClick={() => setSelectedArtwork(art)}>
-                                        <div className="artwork-image"><img src={art.filename} alt={art.title} /></div>
+                                        <div className="artwork-image"><img src={BASE_PATH + art.filename} alt={art.title} /></div>
                                         <div className="artwork-info">
                                             <h3 className="artwork-title">{art.title}</h3>
                                             <p className="artwork-medium">{art.medium}</p>
@@ -226,7 +239,7 @@
                         </button>
                     </header>
                     <div className="detail-container">
-                        <div className="detail-image-container"><img src={artwork.filename} alt={artwork.title} className="detail-image" /></div>
+                        <div className="detail-image-container"><img src={BASE_PATH + artwork.filename} alt={artwork.title} className="detail-image" /></div>
                         <div className="detail-info">
                             <h1 className="detail-title">{artwork.title}</h1>
                             <div className="detail-meta">
