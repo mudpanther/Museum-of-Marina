@@ -195,7 +195,7 @@
                             <div className="gallery-grid">
                                 {filteredArtworks.map(art => (
                                     <div key={art.id} className="artwork-card" onClick={() => setSelectedArtwork(art)}>
-                                        <div className="artwork-image"><img src={`images/${art.filename}`} alt={art.title} /></div>
+                                        <div className="artwork-image"><img src={art.filename} alt={art.title} /></div>
                                         <div className="artwork-info">
                                             <h3 className="artwork-title">{art.title}</h3>
                                             <p className="artwork-medium">{art.medium}</p>
@@ -226,7 +226,7 @@
                         </button>
                     </header>
                     <div className="detail-container">
-                        <div className="detail-image-container"><img src={`images/${artwork.filename}`} alt={artwork.title} className="detail-image" /></div>
+                        <div className="detail-image-container"><img src={artwork.filename} alt={artwork.title} className="detail-image" /></div>
                         <div className="detail-info">
                             <h1 className="detail-title">{artwork.title}</h1>
                             <div className="detail-meta">
