@@ -3,116 +3,453 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Museum of Marina</title>
+    <title>The Museum of Marina - Immersive Experience</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --primary: #2c3e50; --secondary: #8b7355; --accent: #d4af37;
-            --light: #f8f9fa; --dark: #1a1a1a; --gray: #6c757d;
-            --success: #28a745; --danger: #dc3545;
+        body { 
+            font-family: 'Georgia', 'Times New Roman', serif;
+            overflow: hidden;
+            background: #000;
         }
-        body { font-family: 'Georgia', 'Times New Roman', serif; line-height: 1.6; color: var(--dark); background: var(--light); }
-        .app { min-height: 100vh; }
-        .hero { position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%); }
-        .hero-content { position: relative; z-index: 2; text-align: center; padding: 2rem; max-width: 900px; }
-        .hero-title { font-size: clamp(2.5rem, 8vw, 6rem); font-weight: 700; color: white; margin-bottom: 1.5rem; text-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-        .hero-subtitle { font-size: clamp(1.2rem, 3vw, 1.8rem); color: rgba(255,255,255,0.9); margin-bottom: 1rem; font-style: italic; }
-        .hero-dedication { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--accent); font-weight: 500; }
-        .about-artist { padding: 8rem 2rem; background: white; }
-        .about-content { max-width: 800px; margin: 0 auto; }
-        .about-content h2 { font-size: clamp(2rem, 5vw, 3.5rem); text-align: center; margin-bottom: 3rem; color: var(--primary); }
-        .about-text { font-size: 1.2rem; line-height: 1.8; margin-bottom: 1.5rem; }
-        .dedication { margin-top: 3rem; padding: 2rem; border-left: 4px solid var(--accent); background: var(--light); font-style: italic; font-size: 1.1rem; color: var(--secondary); }
-        .enter-button { display: inline-flex; align-items: center; gap: 1rem; padding: 1.5rem 3rem; font-size: 1.3rem; font-weight: 600; background: linear-gradient(135deg, var(--accent), var(--secondary)); color: white; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.2); margin: 4rem auto; display: flex; width: fit-content; }
-        .enter-button:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
-        .museum-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem 2rem; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
-        .museum-header h1 { font-size: 2rem; color: var(--primary); flex: 1; text-align: center; }
-        .back-button, .muse-button { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; border: 2px solid var(--primary); background: transparent; color: var(--primary); border-radius: 8px; cursor: pointer; transition: all 0.3s; }
-        .back-button:hover, .muse-button:hover { background: var(--primary); color: white; }
-        .muse-button { background: linear-gradient(135deg, var(--accent), var(--secondary)); border: none; color: white; }
-        .museum-container { display: grid; grid-template-columns: 280px 1fr; gap: 2rem; padding: 2rem; max-width: 1600px; margin: 0 auto; }
-        .filters { background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); height: fit-content; position: sticky; top: 100px; }
-        .filter-section { margin-bottom: 2rem; }
-        .filter-section h3 { font-size: 1.1rem; margin-bottom: 1rem; color: var(--primary); }
-        .filter-buttons { display: flex; flex-direction: column; gap: 0.5rem; }
-        .filter-btn { padding: 0.75rem 1rem; border: 1px solid #ddd; background: white; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-align: left; }
-        .filter-btn:hover { border-color: var(--accent); background: rgba(212, 175, 55, 0.05); }
-        .filter-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
-        .artwork-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer; }
-        .artwork-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
-        .artwork-image { position: relative; width: 100%; padding-top: 75%; overflow: hidden; background: var(--light); }
-        .artwork-image img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
-        .artwork-info { padding: 1.5rem; }
-        .artwork-title { font-size: 1.3rem; margin-bottom: 0.5rem; color: var(--primary); }
-        .artwork-medium { font-size: 0.95rem; color: var(--gray); margin-bottom: 0.5rem; }
-        .artwork-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; }
-        .status-badge { display: inline-block; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; }
-        .status-badge.available { background: rgba(40, 167, 69, 0.1); color: var(--success); }
-        .status-badge.sold { background: rgba(220, 53, 69, 0.1); color: var(--danger); }
-        .status-badge.private-collection { background: rgba(108, 117, 125, 0.1); color: var(--gray); }
-        .artwork-price { font-size: 1.1rem; font-weight: 600; color: var(--accent); }
-        .detail-container { display: grid; grid-template-columns: 1fr 500px; gap: 3rem; padding: 3rem; max-width: 1600px; margin: 0 auto; }
-        .detail-image-container { background: white; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .detail-image { width: 100%; border-radius: 8px; }
-        .detail-info { background: white; border-radius: 12px; padding: 2.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .detail-title { font-size: 2.5rem; color: var(--primary); margin-bottom: 2rem; }
-        .detail-meta { display: grid; gap: 1.5rem; padding: 2rem 0; border-top: 2px solid var(--light); border-bottom: 2px solid var(--light); margin-bottom: 2rem; }
-        .meta-item { display: flex; justify-content: space-between; }
-        .meta-label { font-size: 0.95rem; color: var(--gray); text-transform: uppercase; }
-        .meta-value { font-size: 1.1rem; color: var(--dark); font-weight: 500; }
-        .detail-description { margin-bottom: 2rem; }
-        .detail-description h3 { margin-bottom: 1rem; }
-        .detail-description p { font-size: 1.1rem; line-height: 1.8; }
-        .chat-fab { position: fixed; bottom: 2rem; right: 2rem; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--secondary)); border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 999; transition: all 0.3s; }
-        .chat-fab:hover { transform: scale(1.1); }
-        .chat-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); z-index: 1000; backdrop-filter: blur(4px); }
-        .muse-chat { position: fixed; top: 0; right: 0; width: 450px; height: 100vh; background: white; box-shadow: -4px 0 24px rgba(0, 0, 0, 0.2); z-index: 1001; display: flex; flex-direction: column; }
-        .chat-header { display: flex; align-items: center; justify-content: space-between; padding: 1.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
-        .chat-header h3 { color: white; font-size: 1.3rem; }
-        .chat-close { width: 40px; height: 40px; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-        .chat-messages { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-        .message { display: flex; gap: 0.75rem; }
-        .message.user { justify-content: flex-end; }
-        .message-content { max-width: 75%; padding: 1rem 1.25rem; background: var(--light); border-radius: 18px; font-size: 0.95rem; line-height: 1.6; }
-        .message.user .message-content { background: var(--accent); color: white; }
-        .chat-input-form { display: flex; gap: 0.75rem; padding: 1.5rem; background: white; border-top: 1px solid #ddd; }
-        .chat-input { flex: 1; padding: 1rem 1.25rem; border: 2px solid #ddd; border-radius: 24px; font-size: 0.95rem; outline: none; }
-        .chat-input:focus { border-color: var(--accent); }
-        .chat-send { width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent), var(--secondary)); border: none; border-radius: 50%; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #canvas-container { 
+            width: 100vw; 
+            height: 100vh; 
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+        
+        /* Landing Page */
+        #landing {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+        #landing.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .landing-content {
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            padding: 2rem;
+        }
+        .landing-content h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+        .landing-content p {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+        .landing-content .subtitle {
+            font-style: italic;
+            color: #d4af37;
+        }
+        .enter-btn {
+            margin-top: 3rem;
+            padding: 1.5rem 3rem;
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #d4af37, #8b7355);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+        .enter-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        /* HUD */
+        #hud {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        #instructions {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 14px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        #crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255,255,255,0.8);
+        }
+        
+        /* Artwork Modal */
+        #artwork-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #artwork-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            max-width: 1400px;
+            max-height: 90vh;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .modal-image {
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+        }
+        .modal-image img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .modal-info {
+            padding: 3rem 2rem;
+            overflow-y: auto;
+            color: #1a1a1a;
+        }
+        .modal-info h2 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+        .modal-meta {
+            display: grid;
+            gap: 1rem;
+            padding: 2rem 0;
+            border-top: 2px solid #f8f9fa;
+            border-bottom: 2px solid #f8f9fa;
+            margin-bottom: 2rem;
+        }
+        .meta-item {
+            display: flex;
+            justify-content: space-between;
+        }
+        .meta-label {
+            color: #6c757d;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        .meta-value {
+            font-weight: 500;
+        }
+        .modal-description {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            pointer-events: all;
+        }
+        .modal-close:hover {
+            background: white;
+        }
+        
+        /* Chat Button */
+        .chat-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37, #8b7355);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            z-index: 150;
+            transition: all 0.3s;
+            pointer-events: all;
+        }
+        .chat-fab:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Chat Panel */
+        .chat-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 250;
+            backdrop-filter: blur(4px);
+            display: none;
+        }
+        .chat-overlay.show {
+            display: block;
+        }
+        .muse-chat {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 450px;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.3);
+            z-index: 251;
+            display: none;
+            flex-direction: column;
+        }
+        .muse-chat.show {
+            display: flex;
+        }
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #2c3e50, #8b7355);
+            color: white;
+        }
+        .chat-header h3 {
+            color: white;
+            font-size: 1.3rem;
+        }
+        .chat-close {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .message {
+            display: flex;
+            gap: 0.75rem;
+        }
+        .message.user {
+            justify-content: flex-end;
+        }
+        .message-content {
+            max-width: 75%;
+            padding: 1rem 1.25rem;
+            background: #f8f9fa;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .message.user .message-content {
+            background: #d4af37;
+            color: white;
+        }
+        .chat-input-form {
+            display: flex;
+            gap: 0.75rem;
+            padding: 1.5rem;
+            background: white;
+            border-top: 1px solid #ddd;
+        }
+        .chat-input {
+            flex: 1;
+            padding: 1rem 1.25rem;
+            border: 2px solid #ddd;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            outline: none;
+        }
+        .chat-input:focus {
+            border-color: #d4af37;
+        }
+        .chat-send {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #d4af37, #8b7355);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
         @media (max-width: 968px) {
-            .museum-container, .detail-container { grid-template-columns: 1fr; }
-            .muse-chat { width: 100%; }
+            .modal-content {
+                grid-template-columns: 1fr;
+            }
+            .muse-chat {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        
-        // Get the base path from the current URL
+    <!-- Landing Page -->
+    <div id="landing">
+        <div class="landing-content">
+            <h1>The Museum of Marina</h1>
+            <p>An Immersive 3D Experience</p>
+            <p class="subtitle">Made with love by your son</p>
+            <button class="enter-btn" onclick="enterMuseum()">Enter the Museum</button>
+        </div>
+    </div>
+    
+    <!-- 3D Canvas -->
+    <div id="canvas-container"></div>
+    
+    <!-- HUD -->
+    <div id="hud" style="display: none;">
+        <div id="instructions">
+            <strong>WASD</strong> or <strong>Arrow Keys</strong> to move • <strong>Mouse</strong> to look around<br>
+            <strong>Click</strong> on paintings to view details • <strong>ESC</strong> to exit viewing
+        </div>
+        <div id="crosshair"></div>
+    </div>
+    
+    <!-- Artwork Modal -->
+    <div id="artwork-modal">
+        <button class="modal-close" onclick="closeArtwork()">×</button>
+        <div class="modal-content">
+            <div class="modal-image">
+                <img id="modal-img" src="" alt="">
+            </div>
+            <div class="modal-info">
+                <h2 id="modal-title"></h2>
+                <div class="modal-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Medium</span>
+                        <span class="meta-value" id="modal-medium"></span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Collection</span>
+                        <span class="meta-value" id="modal-collection"></span>
+                    </div>
+                    <div class="meta-item" id="modal-year-item" style="display: none;">
+                        <span class="meta-label">Year</span>
+                        <span class="meta-value" id="modal-year"></span>
+                    </div>
+                    <div class="meta-item" id="modal-price-item" style="display: none;">
+                        <span class="meta-label">Price</span>
+                        <span class="meta-value" id="modal-price"></span>
+                    </div>
+                </div>
+                <div class="modal-description" id="modal-description"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chat Interface -->
+    <button class="chat-fab" onclick="toggleChat()" style="display: none;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    </button>
+    
+    <div class="chat-overlay" onclick="toggleChat()"></div>
+    <div class="muse-chat">
+        <div class="chat-header">
+            <h3>Muse AI Assistant</h3>
+            <button class="chat-close" onclick="toggleChat()">×</button>
+        </div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <form class="chat-input-form" onsubmit="sendMessage(event)">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Ask Muse anything..." />
+            <button type="submit" class="chat-send">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Get base path
         const getBasePath = () => {
             const path = window.location.pathname;
             const segments = path.split('/').filter(Boolean);
-            // If we're in a GitHub Pages project (not user site), first segment is the repo name
             if (segments.length > 0 && segments[0] !== 'index.html') {
                 return '/' + segments[0] + '/';
             }
             return '/';
         };
-        
         const BASE_PATH = getBasePath();
         
+        // API Key
         const keyParts = ['c2stYW50LWFwaTA','zLUFzMzBXejVs','WTZFQklZTy1LdFZn','TG1XT0VId2xSVFNv','TGxub1J5MkJMcTg2','SjJuRm1XT3hUaVpU','Y29MZGxSbDc5d0E2','X3czdXJ3R1FkcVZh','a0t6eHpRLXNWSGZsZ0FB'];
-        
         function getApiKey() {
             try { return atob(keyParts.join('')); } catch (e) { return null; }
         }
         
+        // Artwork data
         const artworks = [
             { id: 1, title: "Vineyard Dreams", filename: "marina_1.jpg", medium: "Acrylic Mural", year: 2008, status: "Sold", description: "A Mediterranean vineyard scene with rolling hills and rustic charm.", collection: "Landscapes" },
             { id: 2, title: "Dance of Light", filename: "marina_2.jpg", medium: "Oil on Canvas", status: "Available", price: 450, description: "Abstract expressionist piece featuring a silhouetted dancer amid dynamic rays of light.", collection: "Abstract" },
@@ -135,197 +472,399 @@
             { id: 19, title: "Performance", filename: "marina_23.jpg", medium: "Oil on Canvas", status: "Available", price: 525, description: "Atmospheric scene of performers on stage.", collection: "Figurative" }
         ];
         
-        async function sendToMuse(message) {
-            const apiKey = getApiKey();
-            if (!apiKey) throw new Error('API configuration error');
-            const response = await fetch('https://api.anthropic.com/v1/messages', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
-                body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: 'You are "Muse" - an AI assistant for Marina, a talented visual artist. Help her with descriptions, titles, captions, and creative feedback. Be warm and professional.', messages: [{ role: 'user', content: message }] })
-            });
-            if (!response.ok) throw new Error('API request failed');
-            const data = await response.json();
-            return data.content[0].text;
-        }
+        // Three.js setup
+        let scene, camera, renderer, controls;
+        let paintings = [];
+        let raycaster, mouse;
+        let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+        let velocity = new THREE.Vector3();
+        let direction = new THREE.Vector3();
+        const clock = new THREE.Clock();
         
-        function Landing({ onNavigate }) {
-            return (
-                <div className="landing">
-                    <div className="hero">
-                        <div className="hero-content">
-                            <h1 className="hero-title">The Museum of Marina</h1>
-                            <p className="hero-subtitle">A living home for your art, your stories, and your magic</p>
-                            <p className="hero-dedication">Made with love by your son</p>
-                        </div>
-                    </div>
-                    <section className="about-artist">
-                        <div className="about-content">
-                            <h2>About the Artist</h2>
-                            <p className="about-text">Marina is a multi-dimensional artist whose work transcends traditional boundaries, weaving together surrealism, abstract expressionism, and classical technique.</p>
-                            <p className="about-text">Her paintings are portals into worlds where dreams dance with reality, where ancient myths breathe alongside modern anxieties, and where the human spirit finds expression in both ethereal light and bold, visceral form.</p>
-                            <blockquote className="dedication">"To the woman who taught me to see the world as art, who showed me that creativity is courage, and whose brush has painted not just canvases, but a life of beauty and meaning."</blockquote>
-                        </div>
-                    </section>
-                    <button className="enter-button" onClick={() => onNavigate('museum')}>
-                        <span>Enter the Museum</span>
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                    </button>
-                </div>
-            );
-        }
-        
-        function Museum({ onNavigate, onOpenChat }) {
-            const [selectedCollection, setSelectedCollection] = useState('All');
-            const [selectedArtwork, setSelectedArtwork] = useState(null);
-            const collections = ['All', 'Landscapes', 'Abstract', 'Surrealism', 'Expressionism', 'Figure Studies', 'Spiritual'];
-            const filteredArtworks = artworks.filter(art => selectedCollection === 'All' || art.collection === selectedCollection);
+        function enterMuseum() {
+            document.getElementById('landing').classList.add('hidden');
+            document.getElementById('hud').style.display = 'block';
+            document.querySelector('.chat-fab').style.display = 'flex';
             
-            if (selectedArtwork) {
-                return <ArtworkDetail artwork={selectedArtwork} onBack={() => setSelectedArtwork(null)} onOpenChat={onOpenChat} />;
+            setTimeout(() => {
+                document.getElementById('landing').style.display = 'none';
+                initThreeJS();
+            }, 500);
+        }
+        
+        function initThreeJS() {
+            const container = document.getElementById('canvas-container');
+            
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x1a1a1a);
+            scene.fog = new THREE.Fog(0x1a1a1a, 1, 100);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 1.6, 8);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+            
+            // Raycaster for click detection
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+            
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+            
+            const spotLight = new THREE.SpotLight(0xffffff, 0.8);
+            spotLight.position.set(0, 10, 0);
+            spotLight.castShadow = true;
+            scene.add(spotLight);
+            
+            // Add gallery lights
+            for (let i = -3; i <= 3; i++) {
+                const light = new THREE.PointLight(0xffe9c5, 0.6, 15);
+                light.position.set(i * 5, 3, 0);
+                scene.add(light);
             }
             
-            return (
-                <div className="museum">
-                    <header className="museum-header">
-                        <button className="back-button" onClick={() => onNavigate('landing')}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Home
-                        </button>
-                        <h1>The Gallery</h1>
-                        <button className="muse-button" onClick={() => onOpenChat()}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>Ask Muse
-                        </button>
-                    </header>
-                    <div className="museum-container">
-                        <aside className="filters">
-                            <div className="filter-section">
-                                <h3>Collection</h3>
-                                <div className="filter-buttons">
-                                    {collections.map(c => <button key={c} className={`filter-btn ${selectedCollection === c ? 'active' : ''}`} onClick={() => setSelectedCollection(c)}>{c}</button>)}
-                                </div>
-                            </div>
-                        </aside>
-                        <main className="gallery">
-                            <div className="gallery-grid">
-                                {filteredArtworks.map(art => (
-                                    <div key={art.id} className="artwork-card" onClick={() => setSelectedArtwork(art)}>
-                                        <div className="artwork-image"><img src={BASE_PATH + art.filename} alt={art.title} /></div>
-                                        <div className="artwork-info">
-                                            <h3 className="artwork-title">{art.title}</h3>
-                                            <p className="artwork-medium">{art.medium}</p>
-                                            <div className="artwork-meta">
-                                                <span className={`status-badge ${art.status.toLowerCase().replace(' ', '-')}`}>{art.status}</span>
-                                                {art.price && <span className="artwork-price">${art.price}</span>}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </main>
-                    </div>
-                </div>
-            );
-        }
-        
-        function ArtworkDetail({ artwork, onBack, onOpenChat }) {
-            return (
-                <div className="museum">
-                    <header className="museum-header">
-                        <button className="back-button" onClick={onBack}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back to Gallery
-                        </button>
-                        <h1>{artwork.title}</h1>
-                        <button className="muse-button" onClick={() => onOpenChat(artwork)}>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>Ask Muse
-                        </button>
-                    </header>
-                    <div className="detail-container">
-                        <div className="detail-image-container"><img src={BASE_PATH + artwork.filename} alt={artwork.title} className="detail-image" /></div>
-                        <div className="detail-info">
-                            <h1 className="detail-title">{artwork.title}</h1>
-                            <div className="detail-meta">
-                                <div className="meta-item"><span className="meta-label">Medium</span><span className="meta-value">{artwork.medium}</span></div>
-                                {artwork.year && <div className="meta-item"><span className="meta-label">Year</span><span className="meta-value">{artwork.year}</span></div>}
-                                <div className="meta-item"><span className="meta-label">Collection</span><span className="meta-value">{artwork.collection}</span></div>
-                                {artwork.price && <div className="meta-item"><span className="meta-label">Price</span><span className="meta-value">${artwork.price}</span></div>}
-                            </div>
-                            {artwork.description && <div className="detail-description"><h3>About This Piece</h3><p>{artwork.description}</p></div>}
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-        
-        function MuseChat({ isOpen, onClose, artwork }) {
-            const [messages, setMessages] = useState([]);
-            const [input, setInput] = useState('');
-            const [isLoading, setIsLoading] = useState(false);
+            // Floor
+            const floorGeometry = new THREE.PlaneGeometry(50, 50);
+            const floorMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x2a2a2a,
+                roughness: 0.8,
+                metalness: 0.2
+            });
+            const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+            floor.rotation.x = -Math.PI / 2;
+            floor.receiveShadow = true;
+            scene.add(floor);
             
-            useEffect(() => {
-                if (isOpen && messages.length === 0) {
-                    const greeting = artwork ? `Hello! I can help you with "${artwork.title}". What would you like to know?` : "Hello! I'm Muse, your creative assistant. How can I help you today?";
-                    setMessages([{ role: 'assistant', content: greeting }]);
+            // Ceiling
+            const ceiling = new THREE.Mesh(floorGeometry, new THREE.MeshStandardMaterial({ color: 0x3a3a3a }));
+            ceiling.rotation.x = Math.PI / 2;
+            ceiling.position.y = 5;
+            scene.add(ceiling);
+            
+            // Walls
+            createWalls();
+            
+            // Place artworks
+            placeArtworks();
+            
+            // Controls
+            setupControls();
+            
+            // Event listeners
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('click', onDocumentClick);
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
+            
+            // Start animation
+            animate();
+        }
+        
+        function createWalls() {
+            const wallMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0xf5f5f5,
+                roughness: 0.9,
+                metalness: 0.1
+            });
+            
+            // Back wall
+            const backWall = new THREE.Mesh(new THREE.BoxGeometry(50, 5, 0.5), wallMaterial);
+            backWall.position.set(0, 2.5, -10);
+            backWall.receiveShadow = true;
+            scene.add(backWall);
+            
+            // Left wall
+            const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.5, 5, 20), wallMaterial);
+            leftWall.position.set(-15, 2.5, 0);
+            leftWall.receiveShadow = true;
+            scene.add(leftWall);
+            
+            // Right wall
+            const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.5, 5, 20), wallMaterial);
+            rightWall.position.set(15, 2.5, 0);
+            rightWall.receiveShadow = true;
+            scene.add(rightWall);
+        }
+        
+        function placeArtworks() {
+            const textureLoader = new THREE.TextureLoader();
+            
+            // Back wall - 7 paintings
+            for (let i = 0; i < 7; i++) {
+                const artwork = artworks[i];
+                const x = -12 + (i * 4);
+                createPainting(artwork, x, 2.5, -9.7, 0);
+            }
+            
+            // Left wall - 6 paintings
+            for (let i = 0; i < 6; i++) {
+                const artwork = artworks[7 + i];
+                const z = -8 + (i * 3);
+                createPainting(artwork, -14.7, 2.5, z, Math.PI / 2);
+            }
+            
+            // Right wall - 6 paintings
+            for (let i = 0; i < 6; i++) {
+                const artwork = artworks[13 + i];
+                const z = -8 + (i * 3);
+                createPainting(artwork, 14.7, 2.5, z, -Math.PI / 2);
+            }
+        }
+        
+        function createPainting(artwork, x, y, z, rotationY) {
+            const textureLoader = new THREE.TextureLoader();
+            
+            // Frame
+            const frameGeometry = new THREE.BoxGeometry(2.2, 2.7, 0.1);
+            const frameMaterial = new THREE.MeshStandardMaterial({ 
+                color: 0x8b7355,
+                roughness: 0.6,
+                metalness: 0.3
+            });
+            const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+            
+            // Canvas
+            const canvasGeometry = new THREE.PlaneGeometry(2, 2.5);
+            textureLoader.load(BASE_PATH + artwork.filename, (texture) => {
+                const canvasMaterial = new THREE.MeshStandardMaterial({ 
+                    map: texture,
+                    side: THREE.DoubleSide
+                });
+                const canvas = new THREE.Mesh(canvasGeometry, canvasMaterial);
+                canvas.position.z = 0.06;
+                frame.add(canvas);
+            });
+            
+            frame.position.set(x, y, z);
+            frame.rotation.y = rotationY;
+            frame.userData = { artwork: artwork };
+            frame.castShadow = true;
+            
+            scene.add(frame);
+            paintings.push(frame);
+            
+            // Spotlight on painting
+            const spotlight = new THREE.SpotLight(0xffffff, 0.5, 5, Math.PI / 6);
+            spotlight.position.set(x, y + 2, z);
+            spotlight.target = frame;
+            scene.add(spotlight);
+        }
+        
+        function setupControls() {
+            // Pointer lock controls
+            document.addEventListener('mousemove', (event) => {
+                if (document.pointerLockElement === renderer.domElement) {
+                    const movementX = event.movementX || 0;
+                    const movementY = event.movementY || 0;
+                    
+                    camera.rotation.y -= movementX * 0.002;
+                    camera.rotation.x -= movementY * 0.002;
+                    camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
                 }
-            }, [isOpen]);
+            });
             
-            const handleSend = async (e) => {
-                e.preventDefault();
-                if (!input.trim() || isLoading) return;
-                const userMessage = input.trim();
-                setInput('');
-                setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
-                setIsLoading(true);
-                try {
-                    const response = await sendToMuse(userMessage);
-                    setMessages(prev => [...prev, { role: 'assistant', content: response }]);
-                } catch (err) {
-                    setMessages(prev => [...prev, { role: 'assistant', content: `Sorry, I encountered an error: ${err.message}` }]);
-                } finally {
-                    setIsLoading(false);
+            renderer.domElement.addEventListener('click', () => {
+                if (document.getElementById('artwork-modal').classList.contains('show')) return;
+                if (document.querySelector('.muse-chat').classList.contains('show')) return;
+                renderer.domElement.requestPointerLock();
+            });
+        }
+        
+        function onKeyDown(event) {
+            switch (event.code) {
+                case 'ArrowUp':
+                case 'KeyW':
+                    moveForward = true;
+                    break;
+                case 'ArrowDown':
+                case 'KeyS':
+                    moveBackward = true;
+                    break;
+                case 'ArrowLeft':
+                case 'KeyA':
+                    moveLeft = true;
+                    break;
+                case 'ArrowRight':
+                case 'KeyD':
+                    moveRight = true;
+                    break;
+                case 'Escape':
+                    closeArtwork();
+                    break;
+            }
+        }
+        
+        function onKeyUp(event) {
+            switch (event.code) {
+                case 'ArrowUp':
+                case 'KeyW':
+                    moveForward = false;
+                    break;
+                case 'ArrowDown':
+                case 'KeyS':
+                    moveBackward = false;
+                    break;
+                case 'ArrowLeft':
+                case 'KeyA':
+                    moveLeft = false;
+                    break;
+                case 'ArrowRight':
+                case 'KeyD':
+                    moveRight = false;
+                    break;
+            }
+        }
+        
+        function onDocumentClick(event) {
+            if (event.target.closest('#artwork-modal') || 
+                event.target.closest('.chat-fab') || 
+                event.target.closest('.muse-chat')) {
+                return;
+            }
+            
+            // Check if clicking on a painting
+            raycaster.setFromCamera(new THREE.Vector2(0, 0), camera); // Center of screen
+            const intersects = raycaster.intersectObjects(paintings, true);
+            
+            if (intersects.length > 0) {
+                let painting = intersects[0].object;
+                while (painting && !painting.userData.artwork) {
+                    painting = painting.parent;
                 }
-            };
-            
-            if (!isOpen) return null;
-            
-            return (
-                <>
-                    <div className="chat-overlay" onClick={onClose}></div>
-                    <div className="muse-chat">
-                        <div className="chat-header"><h3>Muse AI Assistant</h3><button className="chat-close" onClick={onClose}>×</button></div>
-                        <div className="chat-messages">
-                            {messages.map((msg, idx) => <div key={idx} className={`message ${msg.role}`}><div className="message-content"><p>{msg.content}</p></div></div>)}
-                        </div>
-                        <form className="chat-input-form" onSubmit={handleSend}>
-                            <input type="text" className="chat-input" placeholder="Ask Muse anything..." value={input} onChange={(e) => setInput(e.target.value)} disabled={isLoading} />
-                            <button type="submit" className="chat-send" disabled={!input.trim() || isLoading}>
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </>
-            );
+                if (painting && painting.userData.artwork) {
+                    showArtwork(painting.userData.artwork);
+                }
+            }
         }
         
-        function App() {
-            const [page, setPage] = useState('landing');
-            const [isChatOpen, setIsChatOpen] = useState(false);
-            const [chatArtwork, setChatArtwork] = useState(null);
-            const openChat = (artwork = null) => { setChatArtwork(artwork); setIsChatOpen(true); };
+        function showArtwork(artwork) {
+            document.exitPointerLock();
             
-            return (
-                <div className="app">
-                    {page === 'landing' && <Landing onNavigate={setPage} />}
-                    {page === 'museum' && <Museum onNavigate={setPage} onOpenChat={openChat} />}
-                    <MuseChat isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} artwork={chatArtwork} />
-                    {!isChatOpen && page !== 'landing' && (
-                        <button className="chat-fab" onClick={() => openChat()}>
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-                        </button>
-                    )}
-                </div>
-            );
+            const modal = document.getElementById('artwork-modal');
+            document.getElementById('modal-img').src = BASE_PATH + artwork.filename;
+            document.getElementById('modal-title').textContent = artwork.title;
+            document.getElementById('modal-medium').textContent = artwork.medium;
+            document.getElementById('modal-collection').textContent = artwork.collection;
+            document.getElementById('modal-description').textContent = artwork.description;
+            
+            if (artwork.year) {
+                document.getElementById('modal-year-item').style.display = 'flex';
+                document.getElementById('modal-year').textContent = artwork.year;
+            } else {
+                document.getElementById('modal-year-item').style.display = 'none';
+            }
+            
+            if (artwork.price) {
+                document.getElementById('modal-price-item').style.display = 'flex';
+                document.getElementById('modal-price').textContent = '$' + artwork.price;
+            } else {
+                document.getElementById('modal-price-item').style.display = 'none';
+            }
+            
+            modal.classList.add('show');
         }
         
-        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+        function closeArtwork() {
+            document.getElementById('artwork-modal').classList.remove('show');
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const delta = clock.getDelta();
+            
+            // Movement
+            velocity.x -= velocity.x * 10.0 * delta;
+            velocity.z -= velocity.z * 10.0 * delta;
+            
+            direction.z = Number(moveForward) - Number(moveBackward);
+            direction.x = Number(moveLeft) - Number(moveRight);
+            direction.normalize();
+            
+            if (moveForward || moveBackward) velocity.z -= direction.z * 2.5 * delta;
+            if (moveLeft || moveRight) velocity.x -= direction.x * 2.5 * delta;
+            
+            // Apply rotation to movement
+            const rotatedVelocity = velocity.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), camera.rotation.y);
+            camera.position.add(rotatedVelocity);
+            
+            // Boundaries
+            camera.position.x = Math.max(-13, Math.min(13, camera.position.x));
+            camera.position.z = Math.max(-8, Math.min(8, camera.position.z));
+            
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Chat functions
+        let chatMessages = [];
+        
+        function toggleChat() {
+            const overlay = document.querySelector('.chat-overlay');
+            const chat = document.querySelector('.muse-chat');
+            overlay.classList.toggle('show');
+            chat.classList.toggle('show');
+            
+            if (chat.classList.contains('show') && chatMessages.length === 0) {
+                addMessage('assistant', "Hello! I'm Muse, your creative assistant. How can I help you explore Marina's art today?");
+            }
+        }
+        
+        function addMessage(role, content) {
+            chatMessages.push({ role, content });
+            const messagesDiv = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            messageDiv.innerHTML = `<div class="message-content"><p>${content}</p></div>`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        async function sendMessage(event) {
+            event.preventDefault();
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            input.value = '';
+            addMessage('user', message);
+            
+            try {
+                const apiKey = getApiKey();
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': apiKey,
+                        'anthropic-version': '2023-06-01'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 1000,
+                        system: 'You are "Muse" - an AI assistant for Marina, a talented visual artist. Help with descriptions, titles, captions, and creative feedback. Be warm and professional.',
+                        messages: [{ role: 'user', content: message }]
+                    })
+                });
+                
+                const data = await response.json();
+                addMessage('assistant', data.content[0].text);
+            } catch (err) {
+                addMessage('assistant', `Sorry, I encountered an error: ${err.message}`);
+            }
+        }
     </script>
 </body>
 </html>
